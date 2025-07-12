@@ -1,7 +1,7 @@
 /* Fuente personalizada */
 @font-face {
     font-family: 'Smack Laideth Down 2024';
-    src: url('fonts/SmackLaidethDown2024.ttf') format('truetype');
+    src: url('fonts/SmackLaidethDown2024.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
 }
@@ -187,7 +187,8 @@ body {
     margin: 0 auto;
 }
 
-#contact-form input, #contact-form textarea {
+#contact-form input,
+#contact-form textarea {
     padding: 1rem;
     border: 1px solid #ddd;
     border-radius: 10px;
@@ -210,15 +211,15 @@ body {
     background: #333;
 }
 
-/* Animacion de carga. */
+/* Animacion de carga */
 #contact-form button.loading {
-    background-color: #ccc; 
-    cursor: not-allowed; 
+    background-color: #ccc;
+    cursor: not-allowed;
     position: relative;
 }
 
 #contact-form button.loading::after {
-    content: ''; 
+    content: '';
     position: absolute;
     top: 50%;
     left: 50%;
@@ -265,11 +266,16 @@ body {
     background-color: #F44336;
 }
 
-/* Animación para desaparecer el mensaje */
 @keyframes fade-in-out {
-    0% { opacity: 1; }
-    80% { opacity: 1; }
-    100% { opacity: 0; }
+    0% {
+        opacity: 1;
+    }
+    80% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
 }
 
 /* Estilo para el formulario de inscripción */
@@ -429,7 +435,10 @@ footer .social-links svg {
 .hero-overlay {
     background-color: rgba(0, 0, 0, 0.3);
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     z-index: 1;
 }
 
