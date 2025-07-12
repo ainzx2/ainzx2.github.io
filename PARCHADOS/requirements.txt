@@ -2,4 +2,5 @@ Flask
 Flask-Mail
 python-dotenv
 openpyxl
-gunicorn
+gspread
+oauth2client
