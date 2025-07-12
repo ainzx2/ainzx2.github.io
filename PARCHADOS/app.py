@@ -84,10 +84,10 @@ def send_email():
         msg.body = f"Nombre: {nombre}\nCorreo: {correo}\nMensaje: {mensaje}"
 
         mail.send(msg)
-        flash("✅ Mensaje enviado correctamente.", "success")
+        flash("Mensaje enviado correctamente.", "success")
     except Exception as e:
         print(f"Error: {e}")
-        flash("❌ Ocurrió un error al enviar el mensaje.", "danger")
+        flash("Ocurrió un error al enviar el mensaje.", "danger")
 
     return redirect('/')
 
@@ -98,7 +98,7 @@ def inscribir():
         datos = {campo: request.form.get(campo, '').strip() for campo in campos}
 
         if '' in datos.values():
-            flash("❌ Por favor, completa todos los campos antes de enviar la inscripción.", "danger")
+            flash("Por favor, completa todos los campos antes de enviar la inscripción.", "danger")
             return redirect('/')
 
         conn = get_connection()
@@ -111,11 +111,11 @@ def inscribir():
         conn.commit()
         conn.close()
 
-        flash("✅ ¡Inscripción enviada correctamente!", "success")
+        flash("¡Inscripción enviada correctamente!", "success")
 
     except Exception as e:
         print(f"Error al inscribir: {e}")
-        flash("❌ Ocurrió un error al guardar la inscripción.", "danger")
+        flash("Ocurrió un error al guardar la inscripción.", "danger")
 
     return redirect('/')
 
@@ -131,7 +131,7 @@ def ver_inscritos():
         return render_template('inscritos.html', inscritos=inscritos)
     except Exception as e:
         print(f"Error al obtener inscritos: {e}")
-        flash("❌ No se pudo obtener la lista de inscritos.", "danger")
+        flash("No se pudo obtener la lista de inscritos.", "danger")
         return redirect('/')
 
 @app.route('/descargar_inscritos')
@@ -179,10 +179,10 @@ def reiniciar_inscritos():
         c.execute('DELETE FROM inscripciones')
         conn.commit()
         conn.close()
-        # NO flash aquí
+        flash("✅ Lista de inscritos reiniciada correctamente.", "success")
     except Exception as e:
         print(f"Error al reiniciar: {e}")
-        flash("❌ Error al reiniciar la lista.", "danger")
+        flash("⚠️ Error al reiniciar la lista.", "danger")
     return redirect('/inscritos')
 
 @app.route('/reiniciar_id', methods=['POST'])
@@ -196,10 +196,10 @@ def reiniciar_id():
         c.execute('ALTER SEQUENCE inscripciones_id_seq RESTART WITH 1')
         conn.commit()
         conn.close()
-        # NO flash aquí
+        flash("✅ Lista de inscritos e ID reiniciados correctamente.", "success")
     except Exception as e:
         print(f"Error al reiniciar ID: {e}")
-        flash("❌ Error al reiniciar el ID de la lista.", "danger")
+        flash("⚠️ Error al reiniciar el ID de la lista.", "danger")
     return redirect('/inscritos')
 
 if __name__ == "__main__":
