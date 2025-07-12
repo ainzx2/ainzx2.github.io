@@ -1,17 +1,19 @@
 from flask import Flask, render_template, request, redirect, flash, Response, send_file
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
+import sqlite3
 import os
 from functools import wraps
 import openpyxl
 from io import BytesIO
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
 
-# Cargar variables de entorno
+# Cargar variables de entorno (.env)
 load_dotenv()
 
-app = Flask(__name__)
+app = Flask(_name_)
+
+
+# Clave secreta
 app.secret_key = os.getenv('FLASK_SECRET_KEY', '123@h')
 
 # Configuración Flask-Mail
@@ -24,13 +26,29 @@ app.config['MAIL_DEFAULT_SENDER'] = app.config['MAIL_USERNAME']
 
 mail = Mail(app)
 
-# Configuración Google Sheets
-def get_sheet():
-    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    creds = ServiceAccountCredentials.from_json_keyfile_name('/etc/secrets/credenciales.json', scope)
-    client = gspread.authorize(creds)
-    sheet = client.open('inscripciones_parchados').sheet1
-    return sheet
+# Inicializar base de datos
+def init_db():
+    conn = sqlite3.connect('inscripciones.db')
+    c = conn.cursor()
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS inscripciones (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            tipo_doc TEXT,
+            num_doc TEXT,
+            nombres TEXT,
+            apellidos TEXT,
+            edad INTEGER,
+            genero TEXT,
+            categoria TEXT,
+            barrio TEXT,
+            num_inscripcion TEXT
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+init_db()
+
 
 # Autenticación
 USUARIO_ADMIN = "organizador"
@@ -73,16 +91,25 @@ def send_email():
 def inscribir():
     try:
         campos = ['tipo_doc', 'num_doc', 'nombres', 'apellidos', 'edad', 'genero', 'categoria', 'barrio', 'num_inscripcion']
-        datos = [request.form.get(campo, '').strip() for campo in campos]
+        datos = {campo: request.form.get(campo, '').strip() for campo in campos}
 
-        if '' in datos:
+        # Validación de campos vacíos para evitar inscripciones incompletas
+        if '' in datos.values():
             flash("Por favor, completa todos los campos antes de enviar la inscripción.", "danger")
             return redirect('/')
 
-        sheet = get_sheet()
-        sheet.append_row(datos)
+        conn = sqlite3.connect('inscripciones.db')
+        c = conn.cursor()
+        c.execute('''
+            INSERT INTO inscripciones 
+            (tipo_doc, num_doc, nombres, apellidos, edad, genero, categoria, barrio, num_inscripcion)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', tuple(datos.values()))
+        conn.commit()
+        conn.close()
 
         flash("¡Inscripción enviada correctamente!", "success")
+
     except Exception as e:
         print(f"Error al inscribir: {e}")
         flash("Ocurrió un error al guardar la inscripción.", "danger")
@@ -93,8 +120,11 @@ def inscribir():
 @requiere_login
 def ver_inscritos():
     try:
-        sheet = get_sheet()
-        inscritos = sheet.get_all_values()[1:]  # omitir encabezado
+        conn = sqlite3.connect('inscripciones.db')
+        c = conn.cursor()
+        c.execute('SELECT * FROM inscripciones ORDER BY id DESC')
+        inscritos = c.fetchall()
+        conn.close()
         return render_template('inscritos.html', inscritos=inscritos)
     except Exception as e:
         print(f"Error al obtener inscritos: {e}")
@@ -104,47 +134,69 @@ def ver_inscritos():
 @app.route('/descargar_inscritos')
 @requiere_login
 def descargar_inscritos():
-    try:
-        sheet = get_sheet()
-        inscritos = sheet.get_all_values()
+    conn = sqlite3.connect('inscripciones.db')
+    c = conn.cursor()
+    c.execute('SELECT * FROM inscripciones')
+    inscritos = c.fetchall()
+    conn.close()
 
-        wb = openpyxl.Workbook()
-        ws = wb.active
-        ws.title = "Inscritos"
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Inscritos"
 
-        for row in inscritos:
-            ws.append(row)
+    encabezados = ["ID", "Tipo Doc", "Número Doc", "Nombres", "Apellidos",
+                   "Edad", "Género", "Categoría", "Barrio", "N° Inscripción"]
+    ws.append(encabezados)
 
-        for column_cells in ws.columns:
-            length = max(len(str(cell.value)) for cell in column_cells)
-            ws.column_dimensions[column_cells[0].column_letter].width = length + 2
+    for col in ws.columns:
+        col[0].font = openpyxl.styles.Font(bold=True)
 
-        output = BytesIO()
-        wb.save(output)
-        output.seek(0)
+    for row in inscritos:
+        ws.append(row)
 
-        return send_file(output,
-                         download_name="inscritos.xlsx",
-                         as_attachment=True,
-                         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    except Exception as e:
-        print(f"Error al descargar: {e}")
-        flash("No se pudo descargar la lista.", "danger")
-        return redirect('/inscritos')
+    for column_cells in ws.columns:
+        length = max(len(str(cell.value)) for cell in column_cells)
+        ws.column_dimensions[column_cells[0].column_letter].width = length + 2
+
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    return send_file(output,
+                     download_name="inscritos.xlsx",
+                     as_attachment=True,
+                     mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
 @app.route('/reiniciar_inscritos')
 @requiere_login
 def reiniciar_inscritos():
     try:
-        sheet = get_sheet()
-        registros = len(sheet.get_all_values())
-        if registros > 1:
-            sheet.resize(rows=1)
+        conn = sqlite3.connect('inscripciones.db')
+        c = conn.cursor()
+        c.execute('DELETE FROM inscripciones')
+        conn.commit()
+        conn.close()
         flash("✅ Lista de inscritos reiniciada correctamente.", "success")
     except Exception as e:
         print(f"Error al reiniciar: {e}")
-        flash("⚠️ Error al reiniciar la lista.", "danger")
+        flash("⚠ Error al reiniciar la lista.", "danger")
     return redirect('/inscritos')
 
-if __name__ == "__main__":
+@app.route('/reiniciar_id', methods=['POST'])
+@requiere_login
+def reiniciar_id():
+    try:
+        conn = sqlite3.connect('inscripciones.db')
+        c = conn.cursor()
+        c.execute('DELETE FROM inscripciones')
+        conn.commit()
+        c.execute('DELETE FROM sqlite_sequence WHERE name="inscripciones"')
+        conn.commit()
+        conn.close()
+        flash("✅ Lista de inscritos e ID reiniciados correctamente.", "success")
+    except Exception as e:
+        print(f"Error al reiniciar ID: {e}")
+        flash("⚠ Error al reiniciar el ID de la lista.", "danger")
+    return redirect('/inscritos')
+if _name_ == "_main_":
     app.run(debug=True)
