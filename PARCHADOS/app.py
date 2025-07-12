@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, flash, Response, send_file
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
-import sqlite3
+import psycopg2
 import os
 from functools import wraps
 import openpyxl
@@ -11,7 +11,6 @@ from io import BytesIO
 load_dotenv()
 
 app = Flask(__name__)
-
 
 # Clave secreta
 app.secret_key = os.getenv('FLASK_SECRET_KEY', '123@h')
@@ -26,13 +25,19 @@ app.config['MAIL_DEFAULT_SENDER'] = app.config['MAIL_USERNAME']
 
 mail = Mail(app)
 
+# Conexión a PostgreSQL
+DATABASE_URL = os.getenv('DATABASE_URL')
+
+def get_connection():
+    return psycopg2.connect(DATABASE_URL)
+
 # Inicializar base de datos
 def init_db():
-    conn = sqlite3.connect('inscripciones.db')
+    conn = get_connection()
     c = conn.cursor()
     c.execute('''
         CREATE TABLE IF NOT EXISTS inscripciones (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id SERIAL PRIMARY KEY,
             tipo_doc TEXT,
             num_doc TEXT,
             nombres TEXT,
@@ -48,7 +53,6 @@ def init_db():
     conn.close()
 
 init_db()
-
 
 # Autenticación
 USUARIO_ADMIN = "organizador"
@@ -93,17 +97,16 @@ def inscribir():
         campos = ['tipo_doc', 'num_doc', 'nombres', 'apellidos', 'edad', 'genero', 'categoria', 'barrio', 'num_inscripcion']
         datos = {campo: request.form.get(campo, '').strip() for campo in campos}
 
-        # Validación de campos vacíos para evitar inscripciones incompletas
         if '' in datos.values():
             flash("Por favor, completa todos los campos antes de enviar la inscripción.", "danger")
             return redirect('/')
 
-        conn = sqlite3.connect('inscripciones.db')
+        conn = get_connection()
         c = conn.cursor()
         c.execute('''
             INSERT INTO inscripciones 
             (tipo_doc, num_doc, nombres, apellidos, edad, genero, categoria, barrio, num_inscripcion)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         ''', tuple(datos.values()))
         conn.commit()
         conn.close()
@@ -120,7 +123,7 @@ def inscribir():
 @requiere_login
 def ver_inscritos():
     try:
-        conn = sqlite3.connect('inscripciones.db')
+        conn = get_connection()
         c = conn.cursor()
         c.execute('SELECT * FROM inscripciones ORDER BY id DESC')
         inscritos = c.fetchall()
@@ -134,7 +137,7 @@ def ver_inscritos():
 @app.route('/descargar_inscritos')
 @requiere_login
 def descargar_inscritos():
-    conn = sqlite3.connect('inscripciones.db')
+    conn = get_connection()
     c = conn.cursor()
     c.execute('SELECT * FROM inscripciones')
     inscritos = c.fetchall()
@@ -171,7 +174,7 @@ def descargar_inscritos():
 @requiere_login
 def reiniciar_inscritos():
     try:
-        conn = sqlite3.connect('inscripciones.db')
+        conn = get_connection()
         c = conn.cursor()
         c.execute('DELETE FROM inscripciones')
         conn.commit()
@@ -186,11 +189,11 @@ def reiniciar_inscritos():
 @requiere_login
 def reiniciar_id():
     try:
-        conn = sqlite3.connect('inscripciones.db')
+        conn = get_connection()
         c = conn.cursor()
         c.execute('DELETE FROM inscripciones')
         conn.commit()
-        c.execute('DELETE FROM sqlite_sequence WHERE name="inscripciones"')
+        c.execute('ALTER SEQUENCE inscripciones_id_seq RESTART WITH 1')
         conn.commit()
         conn.close()
         flash("✅ Lista de inscritos e ID reiniciados correctamente.", "success")
@@ -198,5 +201,6 @@ def reiniciar_id():
         print(f"Error al reiniciar ID: {e}")
         flash("⚠️ Error al reiniciar el ID de la lista.", "danger")
     return redirect('/inscritos')
+
 if __name__ == "__main__":
     app.run(debug=True)
