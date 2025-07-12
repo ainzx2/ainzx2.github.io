@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "mystic-now-465705-c8",
+  "private_key_id": "8d2cb5d84b1a27633779f703cf638bb7469f33d7",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCLB9/UbuJChHYb\njcCOeadI3xzuAh9jmqkuKbQZG2LRcG+zLJlzA+YAOeWMGn2nJ9quTWBwKgm38jQD\n3jjsP6h6wpyb4GN1HCQ6tIH/PIAVGLkCP3wt1dUN5IUJOT9U+lBRtVRnhKmFwXpj\nDLS7qiJ2TOYPN6ElFBywkQOXnDDgh5B0vBNGhINsQwUwK778y53IHAm89xV+6nHC\nCosGNjumaErog54RE+6mroP2eBJwkTesUhKeDqUKQHoJrXiLDSbeBhpzHEIvrDQD\n4qZxSOu967g0mHriiIG3FwuIB11q2GZZTrwJjlDYCnoUy0EXmPgUmOWVSCEtV0tV\nhgqJe2I9AgMBAAECggEACiXfEwAsoIV5zSKQYMXlQuF9g4Dg/idH5yrw7pk2t19W\ng99C7GfR210z0awNqmGzaaATud7TpUXMQVEF2iFTtfGBDAlO8SQb9TNU6XFRea4Q\n3lFjH2xZeAFgqtmZyLqERNEwZzrswxV/eP3bLkx+5fV7IGFjhX49kYS63KTbAMnA\nzr2I06jGEtomlFjEZVN1802VaDGoT4D9OocXgfj3k0u6z7mfpcJlTGwLQaMLbm4I\n4BFkOaaNrdL5KBc/5M7BFZzmTU09t4ZZtRZ7JGkJhBhEjX9j91G4WK+6TkxBcWH/\nvWgQcIHI6hVykOaWuIk/aC6uasV7NQuwt/PXKuekmQKBgQC9cYG54jZjObKP3ukT\nzaUAGIdjUGOsQv0k0usmUrpYxzNgMj7ZumbT0zzgxnxaH5jFWeCekH3sC6nluLHD\nqtphp/IRwZjHrLTaFbn/rDkxSRsYWv5xYJe8+YhP1GTdBudhI/9MG+XPIYUOyfce\nhzCNGIoRqwWXF9wAVY3u0Y+A2QKBgQC74ESUogtXvH7EDtdorj8bcbIyniDnVRKR\nEqh+9fhvH81uyKw9Hi7SJsyzCnhURfT0xYifpO9RRd9t9scJ0QpydI4VJJ22xk3V\nrmkk6eXZ7QCBNyx0lSW6O+RwqVWDpuXlUCZ7r0y2Zd/7q3P9piH8B/TE2AVPE4Lu\ngc0Z+HIOBQKBgQC2Pilz7sAveGPkr6Y9HMmsa+xiiAU6xD7OW/FHLrKBkTBFTFDW\nF9Gv2Thpa8hY0qiewbWqFIput1G74o9wEj5/T5c5qaoV/HkGi3whD0b9uLxOE8tO\nuoN+kfamBUb6sheIhZ6lUvki57Ye4f/O6HK2aXL5SDLahWNpFuSxZ/vLEQKBgQCK\noybYa29lUeJVeQI57AMDlHXD5m4vZtapmRQfhBDMp7Inowt+mkxApYL+R6adwXXO\nPgngjIxQ8/e5JJahxtEnvpyuO3PqURFUsjxCkhscIkjyES3L5deOQu4CuOIyoTEa\nc3fCY4x/OFP9Wfrg3PxNB+32Z9YbETHYII6iMHSxpQKBgFMqxouA4/c0nh3k93L2\ndnl/otXPi+Mvz8jqG2Bf2xFoZugm3Hp5hEZrR08KyQ/eQ4ZqPaJap5gkJuHRubfz\nE0CLc66MyCOvMFuGby24LdilOt2rM9p+Y27bja2rorKAUfYU4EXMa+yqHYAteoTw\nOwQs4PzABDp7sqZ0slX3ujEt\n-----END PRIVATE KEY-----\n",
+  "client_email": "carrerasparchados@mystic-now-465705-c8.iam.gserviceaccount.com",
+  "client_id": "115301461720106697910",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/carrerasparchados%40mystic-now-465705-c8.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
