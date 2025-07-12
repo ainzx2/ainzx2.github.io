@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inscritos - La Carrera Más Parchada</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin: 20px auto; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: #333; color: white; }
+        a.button, button.button {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 15px;
+            background: #333;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        a.button:hover, button.button:hover { background: #555; }
+    </style>
+</head>
+<body>
+    <h1>Listado de Inscritos</h1>
+
+    <a href="/descargar_inscritos" class="button">📥 Descargar Excel</a>
+    <a href="/reiniciar_inscritos" class="button" onclick="return confirm('¿Está seguro de reiniciar la lista de inscritos?')">🔄 Reiniciar Lista</a>
+
+    <!-- Botón de reinicio de ID con confirmación -->
+    <form action="/reiniciar_id" method="post" style="display:inline;">
+        <button type="submit" class="button" onclick="return confirm('⚠️ Se reiniciará el contador de ID. Asegúrese de que la lista esté vacía antes de hacerlo.\n\n¿Está seguro de continuar?')">
+            ♻️ Reiniciar ID
+        </button>
+    </form>
+
+    <a href="/" class="button">🏠 Volver al Inicio</a>
+
+    {% if inscritos %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tipo Doc</th>
+                <th>Num Doc</th>
+                <th>Nombres</th>
+                <th>Apellidos</th>
+                <th>Edad</th>
+                <th>Género</th>
+                <th>Categoría</th>
+                <th>Barrio</th>
+                <th>Num Inscripción</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ins in inscritos %}
+            <tr>
+                <td>{{ ins[0] }}</td>
+                <td>{{ ins[1] }}</td>
+                <td>{{ ins[2] }}</td>
+                <td>{{ ins[3] }}</td>
+                <td>{{ ins[4] }}</td>
+                <td>{{ ins[5] }}</td>
+                <td>{{ ins[6] }}</td>
+                <td>{{ ins[7] }}</td>
+                <td>{{ ins[8] }}</td>
+                <td>{{ ins[9] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p><strong>No hay inscritos aún.</strong></p>
+    {% endif %}
+</body>
+</html>
