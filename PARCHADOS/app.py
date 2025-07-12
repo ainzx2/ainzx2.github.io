@@ -10,7 +10,7 @@ from io import BytesIO
 # Cargar variables de entorno (.env)
 load_dotenv()
 
-app = Flask(_name_)
+app = Flask(__name__)
 
 
 # Clave secreta
@@ -179,7 +179,7 @@ def reiniciar_inscritos():
         flash("✅ Lista de inscritos reiniciada correctamente.", "success")
     except Exception as e:
         print(f"Error al reiniciar: {e}")
-        flash("⚠ Error al reiniciar la lista.", "danger")
+        flash("⚠️ Error al reiniciar la lista.", "danger")
     return redirect('/inscritos')
 
 @app.route('/reiniciar_id', methods=['POST'])
@@ -196,7 +196,7 @@ def reiniciar_id():
         flash("✅ Lista de inscritos e ID reiniciados correctamente.", "success")
     except Exception as e:
         print(f"Error al reiniciar ID: {e}")
-        flash("⚠ Error al reiniciar el ID de la lista.", "danger")
+        flash("⚠️ Error al reiniciar el ID de la lista.", "danger")
     return redirect('/inscritos')
-if _name_ == "_main_":
+if __name__ == "__main__":
     app.run(debug=True)
