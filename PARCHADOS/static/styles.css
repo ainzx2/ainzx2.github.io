@@ -1,23 +1,26 @@
 /* Fuente personalizada */
 @font-face {
     font-family: 'Smack Laideth Down 2024';
-    src: url('./fonts/SmackLaidethDown2024.otf') format('opentype');
+    src: url('fonts/SmackLaidethDown2024.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
 }
 
-/* General Reset */
-* {
+/* Fuente secundaria legible */
+body {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    font-family: 'Smack Laideth Down 2024', sans-serif;
-}
-
-body {
+    font-family: 'Poppins', sans-serif;
     line-height: 1.6;
     color: #333;
     background: white;
+    box-sizing: border-box;
+}
+
+/* Aplica la fuente decorativa solo a títulos y logo */
+h1, h2, h3, .logo {
+    font-family: 'Smack Laideth Down 2024', sans-serif;
+    font-feature-settings: "liga" 1, "calt" 1;
 }
 
 /* Navbar */
@@ -37,9 +40,6 @@ body {
     font-size: 1.5rem;
     font-weight: bold;
     color: #fff;
-}
-
-.logo {
     display: flex;
     align-items: center;
     height: 120px;
@@ -87,7 +87,7 @@ body {
     align-items: center;
     justify-content: center;
     height: 90vh;
-    background: url('./img/zapatos.jpg') no-repeat center/cover;
+    background: url('img/zapatos.jpg') no-repeat center/cover;
     text-align: center;
     overflow: hidden;
 }
@@ -95,11 +95,13 @@ body {
 .hero-section h1 {
     font-size: 3.5rem;
     margin-bottom: 1rem;
+    color: white;
 }
 
 .hero-section p {
     font-size: 1.5rem;
     margin-bottom: 2rem;
+    color: white;
 }
 
 .btn-primary {
@@ -118,7 +120,7 @@ body {
     transform: translateY(-3px);
 }
 
-/* Cards Section */
+/* Cards */
 .cards-container {
     padding: 3rem;
     background: #f9f9f9;
@@ -128,7 +130,7 @@ body {
     text-align: center;
     margin-bottom: 2rem;
     font-size: 2.5rem;
-    color: #000;
+    color: black;
 }
 
 .cards {
@@ -161,7 +163,7 @@ body {
     font-size: 0.9rem;
 }
 
-/* Contact Section */
+/* Contact */
 .contact-section {
     padding: 3rem;
     background: #b56c3e;
@@ -188,6 +190,7 @@ body {
     border: 1px solid #ddd;
     border-radius: 10px;
     outline: none;
+    font-family: 'Poppins', sans-serif;
 }
 
 #contact-form button {
@@ -206,33 +209,7 @@ body {
     background: #333;
 }
 
-/* Loading Animation */
-#contact-form button.loading {
-    background-color: #ccc;
-    cursor: not-allowed;
-    position: relative;
-}
-
-#contact-form button.loading::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border: 3px solid #fff;
-    border-top: 3px solid transparent;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to {
-        transform: translate(-50%, -50%) rotate(360deg);
-    }
-}
-
+/* Flash messages */
 .flash-messages {
     position: fixed;
     top: 10px;
@@ -258,12 +235,15 @@ body {
 }
 
 @keyframes fade-in-out {
-    0% { opacity: 1; }
-    80% { opacity: 1; }
-    100% { opacity: 0; }
+    0%, 80% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
 }
 
-/* Formulario de inscripción */
+/* Formulario inscripción */
 .form-section {
     padding: 3rem;
     background-color: #f0f0f0;
@@ -278,7 +258,6 @@ body {
     text-align: center;
     margin-bottom: 2rem;
     font-size: 2rem;
-    color: #333;
 }
 
 #form-inscripcion {
@@ -289,7 +268,7 @@ body {
 
 #form-inscripcion label {
     font-weight: bold;
-    color: #222;
+    margin-bottom: 0.3rem;
 }
 
 #form-inscripcion input,
@@ -298,6 +277,7 @@ body {
     border: 1px solid #ccc;
     border-radius: 8px;
     font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
 }
 
 #form-inscripcion input[readonly] {
@@ -321,7 +301,7 @@ body {
     background: #8e4f27;
 }
 
-/* About Section */
+/* About */
 .about-section {
     padding: 3rem;
     text-align: center;
@@ -370,7 +350,6 @@ footer .social-links a:hover {
 footer .social-links svg {
     margin-right: 0.4rem;
     fill: currentColor;
-    vertical-align: middle;
     width: 20px;
     height: 20px;
 }
@@ -407,7 +386,6 @@ footer .social-links svg {
     }
 }
 
-/* Hero overlay */
 .hero-overlay {
     background-color: rgba(0, 0, 0, 0.3);
     position: absolute;
