@@ -1,7 +1,7 @@
 /* Fuente personalizada */
 @font-face {
-    font-family: 'Galactic Vanguardian';
-    src: url('../fonts/GALACTICVANGUARDIANNCV.otf') format('opentype');
+    font-family: 'GalacticVanguardian';
+    src: url('fonts/GALACTICVANGUARDIANNCV.otf') format('opentype');
     font-weight: normal;
     font-style: normal;
 }
@@ -11,7 +11,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Galactic Vanguardian', sans-serif;
+    font-family: 'GalacticVanguardian', sans-serif;
 }
 
 body {
@@ -80,14 +80,14 @@ body {
     background: white;
 }
 
-/* Hero Section */
+/* página de bienvenida-Hero Section */
 .hero-section {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
     height: 90vh;
-    background: url('../img/zapatos.jpg') no-repeat center/cover;
+    background: url('img/zapatos.jpg') no-repeat center/cover;
     text-align: center;
     overflow: hidden;
 }
@@ -95,13 +95,11 @@ body {
 .hero-section h1 {
     font-size: 3.5rem;
     margin-bottom: 1rem;
-    color: white;
 }
 
 .hero-section p {
     font-size: 1.5rem;
     margin-bottom: 2rem;
-    color: white;
 }
 
 .btn-primary {
@@ -113,16 +111,14 @@ body {
     border-radius: 50px;
     transition: background 0.3s, transform 0.3s;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    font-size: 1.2rem;
 }
 
 .btn-primary:hover {
     background: #ece8e8;
     transform: translateY(-3px);
-    color: #333;
 }
 
-/* Cards Section */
+/* sección de tarjetas */
 .cards-container {
     padding: 3rem;
     background: #f9f9f9;
@@ -170,7 +166,7 @@ body {
     font-size: 0.9rem;
 }
 
-/* Contact Section */
+/* Sección de contacto */
 .contact-section {
     padding: 3rem;
     background: #b56c3e;
@@ -215,7 +211,6 @@ body {
     background: #333;
 }
 
-/* Loading animation */
 #contact-form button.loading {
     background-color: #ccc;
     cursor: not-allowed;
@@ -271,11 +266,18 @@ body {
 }
 
 @keyframes fade-in-out {
-    0% { opacity: 1; }
-    80% { opacity: 1; }
-    100% { opacity: 0; }
+    0% {
+        opacity: 1;
+    }
+    80% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
 }
 
+/* Estilo para el formulario de inscripción */
 .form-section {
     padding: 3rem;
     background-color: #f0f0f0;
@@ -312,7 +314,6 @@ body {
     border-radius: 8px;
     font-size: 1rem;
     width: 100%;
-    max-width: 100%;
 }
 
 #form-inscripcion input[readonly] {
@@ -336,6 +337,30 @@ body {
     background: #8e4f27;
 }
 
+@media (max-width: 768px) {
+    .form-section {
+        padding: 2rem;
+    }
+
+    #form-inscripcion {
+        gap: 1rem;
+    }
+
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+
+    .hero-section p {
+        font-size: 1rem;
+    }
+
+    .btn-primary {
+        font-size: 0.9rem;
+        padding: 0.6rem 1.2rem;
+    }
+}
+
+/* Sección acerca de nosotros */
 .about-section {
     padding: 3rem;
     text-align: center;
@@ -352,6 +377,7 @@ body {
     font-size: 1.3rem;
 }
 
+/* pie de página */
 footer {
     display: flex;
     justify-content: space-between;
@@ -388,7 +414,7 @@ footer .social-links svg {
     height: 20px;
 }
 
-/* Responsive */
+/* Diseño responsivo */
 @media (max-width: 768px) {
     .nav-links {
         display: none;
@@ -414,42 +440,21 @@ footer .social-links svg {
         text-align: center;
         gap: 1rem;
     }
+}
 
-    .hero-section h1 {
-        font-size: 2rem;
-    }
+.hero-overlay {
+    background-color: rgba(0, 0, 0, 0.3);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+}
 
-    .hero-section p {
-        font-size: 1rem;
-    }
-
-    .btn-primary {
-        font-size: 1rem;
-        padding: 0.6rem 1.4rem;
-    }
-
-    .contact-section h2,
-    .form-section h2,
-    .cards-container h2,
-    .about-section h2 {
-        font-size: 1.8rem;
-    }
-
-    .card h3 {
-        font-size: 1.2rem;
-    }
-
-    .card p {
-        font-size: 0.85rem;
-    }
-
-    #contact-form input,
-    #contact-form textarea,
-    #contact-form button,
-    #form-inscripcion label,
-    #form-inscripcion input,
-    #form-inscripcion select,
-    #form-inscripcion button {
-        font-size: 1rem;
-    }
+.hero-content {
+    position: relative;
+    z-index: 2;
+    color: white;
+    padding: 2rem;
 }
