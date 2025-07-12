@@ -27,7 +27,7 @@ mail = Mail(app)
 # Configuración Google Sheets
 def get_sheet():
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    creds = ServiceAccountCredentials.from_json_keyfile_name('credenciales.json', scope)
+    creds = ServiceAccountCredentials.from_json_keyfile_name('/etc/secrets/credenciales.json', scope)
     client = gspread.authorize(creds)
     sheet = client.open('inscripciones_parchados').sheet1
     return sheet
