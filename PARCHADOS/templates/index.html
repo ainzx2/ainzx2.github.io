@@ -29,7 +29,6 @@
 
   <header id="inicio" class="hero-section">
     <div class="hero-overlay"></div>
-    <!-- Solo fondo oscuro -->
     <div class="hero-content">
       <h1>Bienvenido a La Carrera Más Parchada</h1>
       <p>¡Inscríbete y corre con nosotros!</p>
@@ -52,7 +51,6 @@
       </div>
     </section>
 
-    <!-- ✅ FORMULARIO DE INSCRIPCIÓN CORRECTO -->
     <section id="formulario-inscripcion" class="form-section" style="display: none;">
       <h2>Formulario de Inscripción (<span id="categoriaSeleccionada"></span>)</h2>
       <form id="form-inscripcion" method="POST" action="/inscribir">
@@ -73,8 +71,9 @@
         <label>Apellidos *</label>
         <input type="text" name="apellidos" placeholder="Ej: García Ortiz" required />
 
+        <!-- CAMBIO HECHO AQUÍ -->
         <label>Edad *</label>
-        <input type="number" name="edad" required />
+        <input type="number" name="edad" required min="0" max="999" />
 
         <label>Género *</label>
         <select name="genero" required>
@@ -97,7 +96,6 @@
       </form>
     </section>
 
-    <!-- ✅ FORMULARIO DE CONTACTO SIN CAMBIOS -->
     <section id="contacto" class="contact-section">
       <h2>Contacto</h2>
       <form id="contact-form" method="POST" action="/send_email">
