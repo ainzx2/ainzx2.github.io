@@ -7,15 +7,21 @@ from functools import wraps
 import openpyxl
 from io import BytesIO
 
-# Cargar variables de entorno (.env)
+# ============================
+# CARGAR VARIABLES DE ENTORNO
+# ============================
 load_dotenv()
 
 app = Flask(__name__)
 
-# Clave secreta
+# ============================
+# CLAVE SECRETA
+# ============================
 app.secret_key = os.getenv('FLASK_SECRET_KEY', '123@h')
 
-# Configuración Flask-Mail
+# ============================
+# CONFIGURACIÓN FLASK-MAIL
+# ============================
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
@@ -34,33 +40,6 @@ def get_connection():
     if not DATABASE_URL:
         raise RuntimeError("DATABASE_URL no está configurada")
     return psycopg2.connect(DATABASE_URL)
-
-# ============================
-# INICIALIZAR BASE DE DATOS
-# ============================
-def init_db():
-    try:
-        conn = get_connection()
-        c = conn.cursor()
-        c.execute("""
-            CREATE TABLE IF NOT EXISTS inscripciones (
-                id SERIAL PRIMARY KEY,
-                tipo_doc TEXT,
-                num_doc TEXT,
-                nombres TEXT,
-                apellidos TEXT,
-                edad INTEGER,
-                genero TEXT,
-                categoria TEXT,
-                barrio TEXT,
-                num_inscripcion TEXT
-            )
-        """)
-        conn.commit()
-        conn.close()
-        print("Base de datos inicializada correctamente.")
-    except Exception as e:
-        print("⚠️ No se pudo inicializar la base de datos:", e)
 
 # ============================
 # AUTENTICACIÓN BÁSICA
@@ -145,7 +124,6 @@ def inscribir():
 @requiere_login
 def ver_inscritos():
     try:
-        init_db()  # asegura que la tabla exista
         conn = get_connection()
         c = conn.cursor()
         c.execute("SELECT * FROM inscripciones ORDER BY id DESC")
@@ -223,10 +201,3 @@ def reiniciar_id():
         print("Error al reiniciar ID:", e)
         flash("⚠️ Error al reiniciar el ID.", "danger")
     return redirect('/inscritos')
-
-# ============================
-# ARRANQUE
-# ============================
-if __name__ == "__main__":
-    init_db()
-    app.run(host="0.0.0.0", port=5000, debug=True)
