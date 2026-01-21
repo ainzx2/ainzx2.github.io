@@ -25,36 +25,46 @@ app.config['MAIL_DEFAULT_SENDER'] = app.config['MAIL_USERNAME']
 
 mail = Mail(app)
 
-# Conexión a PostgreSQL
+# ============================
+# CONEXIÓN A POSTGRESQL
+# ============================
 DATABASE_URL = os.getenv('DATABASE_URL')
 
 def get_connection():
+    if not DATABASE_URL:
+        raise RuntimeError("DATABASE_URL no está configurada")
     return psycopg2.connect(DATABASE_URL)
 
-# Inicializar base de datos
+# ============================
+# INICIALIZAR BASE DE DATOS
+# ============================
 def init_db():
-    conn = get_connection()
-    c = conn.cursor()
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS inscripciones (
-            id SERIAL PRIMARY KEY,
-            tipo_doc TEXT,
-            num_doc TEXT,
-            nombres TEXT,
-            apellidos TEXT,
-            edad INTEGER,
-            genero TEXT,
-            categoria TEXT,
-            barrio TEXT,
-            num_inscripcion TEXT
-        )
-    ''')
-    conn.commit()
-    conn.close()
+    try:
+        conn = get_connection()
+        c = conn.cursor()
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS inscripciones (
+                id SERIAL PRIMARY KEY,
+                tipo_doc TEXT,
+                num_doc TEXT,
+                nombres TEXT,
+                apellidos TEXT,
+                edad INTEGER,
+                genero TEXT,
+                categoria TEXT,
+                barrio TEXT,
+                num_inscripcion TEXT
+            )
+        """)
+        conn.commit()
+        conn.close()
+        print("Base de datos inicializada correctamente.")
+    except Exception as e:
+        print("⚠️ No se pudo inicializar la base de datos:", e)
 
-init_db()
-
-# Autenticación
+# ============================
+# AUTENTICACIÓN BÁSICA
+# ============================
 USUARIO_ADMIN = "organizador"
 CLAVE_ADMIN = "CarreraParchada_2025#"
 
@@ -63,10 +73,17 @@ def requiere_login(f):
     def decorated(*args, **kwargs):
         auth = request.authorization
         if not auth or not (auth.username == USUARIO_ADMIN and auth.password == CLAVE_ADMIN):
-            return Response('Debe iniciar sesión.', 401, {'WWW-Authenticate': 'Basic realm="Login"'})
+            return Response(
+                'Debe iniciar sesión.',
+                401,
+                {'WWW-Authenticate': 'Basic realm="Login"'}
+            )
         return f(*args, **kwargs)
     return decorated
 
+# ============================
+# RUTAS
+# ============================
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -78,15 +95,17 @@ def send_email():
         correo = request.form['correo']
         mensaje = request.form['mensaje']
 
-        msg = Message('Nuevo mensaje de contacto',
-                      sender=app.config['MAIL_USERNAME'],
-                      recipients=[app.config['MAIL_USERNAME']])
+        msg = Message(
+            'Nuevo mensaje de contacto',
+            sender=app.config['MAIL_USERNAME'],
+            recipients=[app.config['MAIL_USERNAME']]
+        )
         msg.body = f"Nombre: {nombre}\nCorreo: {correo}\nMensaje: {mensaje}"
 
         mail.send(msg)
         flash("Mensaje enviado correctamente.", "success")
     except Exception as e:
-        print(f"Error: {e}")
+        print("Error al enviar correo:", e)
         flash("Ocurrió un error al enviar el mensaje.", "danger")
 
     return redirect('/')
@@ -94,27 +113,30 @@ def send_email():
 @app.route('/inscribir', methods=['POST'])
 def inscribir():
     try:
-        campos = ['tipo_doc', 'num_doc', 'nombres', 'apellidos', 'edad', 'genero', 'categoria', 'barrio', 'num_inscripcion']
+        campos = [
+            'tipo_doc', 'num_doc', 'nombres', 'apellidos',
+            'edad', 'genero', 'categoria', 'barrio', 'num_inscripcion'
+        ]
         datos = {campo: request.form.get(campo, '').strip() for campo in campos}
 
         if '' in datos.values():
-            flash("Por favor, completa todos los campos antes de enviar la inscripción.", "danger")
+            flash("Por favor, completa todos los campos.", "danger")
             return redirect('/')
 
         conn = get_connection()
         c = conn.cursor()
-        c.execute('''
-            INSERT INTO inscripciones 
+        c.execute("""
+            INSERT INTO inscripciones
             (tipo_doc, num_doc, nombres, apellidos, edad, genero, categoria, barrio, num_inscripcion)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-        ''', tuple(datos.values()))
+        """, tuple(datos.values()))
         conn.commit()
         conn.close()
 
         flash("¡Inscripción enviada correctamente!", "success")
 
     except Exception as e:
-        print(f"Error al inscribir: {e}")
+        print("Error al inscribir:", e)
         flash("Ocurrió un error al guardar la inscripción.", "danger")
 
     return redirect('/')
@@ -123,14 +145,15 @@ def inscribir():
 @requiere_login
 def ver_inscritos():
     try:
+        init_db()  # asegura que la tabla exista
         conn = get_connection()
         c = conn.cursor()
-        c.execute('SELECT * FROM inscripciones ORDER BY id DESC')
+        c.execute("SELECT * FROM inscripciones ORDER BY id DESC")
         inscritos = c.fetchall()
         conn.close()
         return render_template('inscritos.html', inscritos=inscritos)
     except Exception as e:
-        print(f"Error al obtener inscritos: {e}")
+        print("Error al obtener inscritos:", e)
         flash("No se pudo obtener la lista de inscritos.", "danger")
         return redirect('/')
 
@@ -139,7 +162,7 @@ def ver_inscritos():
 def descargar_inscritos():
     conn = get_connection()
     c = conn.cursor()
-    c.execute('SELECT * FROM inscripciones')
+    c.execute("SELECT * FROM inscripciones")
     inscritos = c.fetchall()
     conn.close()
 
@@ -147,8 +170,10 @@ def descargar_inscritos():
     ws = wb.active
     ws.title = "Inscritos"
 
-    encabezados = ["ID", "Tipo Doc", "Número Doc", "Nombres", "Apellidos",
-                   "Edad", "Género", "Categoría", "Barrio", "N° Inscripción"]
+    encabezados = [
+        "ID", "Tipo Doc", "Número Doc", "Nombres", "Apellidos",
+        "Edad", "Género", "Categoría", "Barrio", "N° Inscripción"
+    ]
     ws.append(encabezados)
 
     for col in ws.columns:
@@ -157,18 +182,16 @@ def descargar_inscritos():
     for row in inscritos:
         ws.append(row)
 
-    for column_cells in ws.columns:
-        length = max(len(str(cell.value)) for cell in column_cells)
-        ws.column_dimensions[column_cells[0].column_letter].width = length + 2
-
     output = BytesIO()
     wb.save(output)
     output.seek(0)
 
-    return send_file(output,
-                     download_name="inscritos.xlsx",
-                     as_attachment=True,
-                     mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    return send_file(
+        output,
+        download_name="inscritos.xlsx",
+        as_attachment=True,
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
 
 @app.route('/reiniciar_inscritos')
 @requiere_login
@@ -176,12 +199,12 @@ def reiniciar_inscritos():
     try:
         conn = get_connection()
         c = conn.cursor()
-        c.execute('DELETE FROM inscripciones')
+        c.execute("DELETE FROM inscripciones")
         conn.commit()
         conn.close()
         flash("✅ Lista de inscritos reiniciada correctamente.", "success")
     except Exception as e:
-        print(f"Error al reiniciar: {e}")
+        print("Error al reiniciar:", e)
         flash("⚠️ Error al reiniciar la lista.", "danger")
     return redirect('/inscritos')
 
@@ -191,16 +214,19 @@ def reiniciar_id():
     try:
         conn = get_connection()
         c = conn.cursor()
-        c.execute('DELETE FROM inscripciones')
-        conn.commit()
-        c.execute('ALTER SEQUENCE inscripciones_id_seq RESTART WITH 1')
+        c.execute("DELETE FROM inscripciones")
+        c.execute("ALTER SEQUENCE inscripciones_id_seq RESTART WITH 1")
         conn.commit()
         conn.close()
-        flash("✅ Lista de inscritos e ID reiniciados correctamente.", "success")
+        flash("✅ Lista e ID reiniciados correctamente.", "success")
     except Exception as e:
-        print(f"Error al reiniciar ID: {e}")
-        flash("⚠️ Error al reiniciar el ID de la lista.", "danger")
+        print("Error al reiniciar ID:", e)
+        flash("⚠️ Error al reiniciar el ID.", "danger")
     return redirect('/inscritos')
 
+# ============================
+# ARRANQUE
+# ============================
 if __name__ == "__main__":
-    app.run(debug=True)
+    init_db()
+    app.run(host="0.0.0.0", port=5000, debug=True)
